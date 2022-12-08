@@ -1,0 +1,74 @@
+---
+title: "Question 4"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+**A.** Set your working directory to where your project folder is stored. For me, this is my desktop, and the name of my project folder is 'PenguinProjects' (you will need to replace my working directory with yours in the code below). Additionally, load all of the packages you need for the analysis. I have stored all of the necessary packages within the file 'libraries.r' which is in a folder called 'functions' within my overall project folder. I can therefore use the source( ) function to source the necessary libraries from this file: 
+```{r, results = FALSE, warning = FALSE, message = FALSE}
+setwd("~/Desktop/PenguinProjects")
+source("~/Desktop/PenguinProjects/functions/libraries.r")
+```
+
+---------------
+
+**B.** Before cleaning the raw data, save it to its own folder (to preserve the data in its original state). I made the folder 'data_raw' within my project folder to store the raw data. Use the code below to save the raw data to this new folder as a .csv file (replace 'data_raw' with your folder name):
+```{r}
+write.csv(penguins_raw, "data_raw/penguins_raw.csv")
+```
+
+---------------
+
+**C.** Clean the column names of the data set so that there are no spaces between words and no mixing of upper and lower case letters. Additionally, remove rows and columns with no data and remove the columns labeled 'comments' and 'delta'. I have created a function that does this, which I have called 'cleaning'. I have stored this function within a file called 'cleaning.r', which can be found within the 'functions' folder. I can therefore use the source ( ) function to direct R to that file in order to use the function. I have assigned the name 'penguins_clean' to the cleaned data set: 
+```{r, results = FALSE, warning = FALSE, message = FALSE}
+source("~/Desktop/PenguinProjects/functions/cleaning.r")
+penguins_clean <- cleaning(penguins_raw)
+```
+
+---------------
+
+**D.** Save the cleaned data as a .csv file to its own folder within the project folder using the code below. I have called this folder 'data_clean' (replace this with your folder name):
+```{r}
+write.csv(penguins_clean,"data_clean/penguins_clean.csv")
+```
+
+
+---------------
+
+**E.** Subset the clean data to only include body mass, culmen length and species. Even though species is not needed for the analysis that I have chosen, including it will allow us to colour-code the scatterplot by species and therefore gain extra information on how the different species are distributed along the regression line. As well as this, remove penguins that have no data for body mass and/or culmen length. I have created a function that does all of this, called 'remove_NA'. I have stored this function within the file 'cleaning.r' in my 'functions' folder. As before, use the source( ) function to direct R to this file in order to use the function. I have assigned the final subset the name 'mass_and_culmen': 
+```{r, results = FALSE, warning = FALSE, message = FALSE}
+source("~/Desktop/PenguinProjects/functions/cleaning.r")
+mass_and_culmen <- remove_NA(penguins_clean)
+```
+
+---------------
+
+**F.** Use the lm( ) function to fit a linear model of how the culmen length of the penguins varies as a function of their body mass. I have assigned the linear model the name 'regression'. Use the anova ( ) and summary ( ) functions to view the outputs of the model (to gain P-values and the Adjusted R-squared value). I have hidden the outputs to make this document easier to read, but you can run the code yourself to see them. I have given an interpretation of the outputs underneath the code: 
+```{r, results = FALSE, warning = FALSE, message = FALSE}
+regression <- lm(culmen_length_mm ~ body_mass_g, data = mass_and_culmen)
+anova(regression)
+summary(regression)
+```
+
+**Interpretation of the model outputs:** The ANOVA table generated from this linear regression model shows that there is a statistically significant relationship between the culmen length of the penguins and their body mass (p < 0.001). The Adjusted R-squared value from the summary( ) output of the model is 0.3523, which indicates that about 35% of the variability in culmen length of the penguins in the data set can be explained by variation in their body mass, showing a weak positive-correlation between culmen length and body mass. 
+
+---------------
+
+**G.** Plot a scatterplot to visualise the linear regression model fitted in **F**. I have created a function that does this, called 'plot_linear_regression'. This function is stored within the file 'plotting.r' in my 'functions' folder. As before, use the source( ) function to direct R to this folder in order to use the function. I have assigned the name 'my_plot1' to the scatterplot: 
+```{r, results = FALSE, warning = FALSE, message = FALSE}
+source("~/Desktop/PenguinProjects/functions/plotting.r") 
+my_plot1 <- plot_linear_regression(mass_and_culmen)
+my_plot1
+```
+
+---------------
+
+**H.** Now save your figure as a svg file. I have created a function to do this, called 'save_regression_plot'. I have stored this function in the 'plotting.r' file. As before, use the source( ) function to direct R to this folder in order to use the function. When using the function, include the data set name, the location of the svg file, your preferred width and height of the figure and your preferred scaling. My svg file is called 'my_vector_figure.svg' and is found within the 'figures' folder:  
+```{r, results = FALSE, warning = FALSE, message = FALSE}
+source("~/Desktop/PenguinProjects/functions/plotting.r") 
+save_regression_plot(mass_and_culmen, "figures/my_vector_figure.svg", width = 15, height = 8.5, scaling = 1.3)
+```
